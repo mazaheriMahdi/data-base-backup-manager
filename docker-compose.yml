@@ -15,7 +15,8 @@ services:
       BACKUP_DB_HOST: ${BACKUP_DB_HOST}
       BACKUP_DB_PORT: ${BACKUP_DB_PORT}
       BACKUP_DB_NAME: ${BACKUP_DB_NAME}
-
+    ports:
+      - "8082:8080"
 #    volumes:
 #      - ./data:/app/data # Example volume for storing backup files, modify as needed
     restart: unless-stopped

@@ -28,6 +28,7 @@ func NewWorker() *Worker {
 func (w *Worker) Start() {
 	w.isRunning = true
 	go func() {
+		log.Printf("Wroker With Id %v started Successfully\n", w.Id)
 		for w.isRunning {
 			if len(w.queue) == 0 {
 				log.Println("Worker queue is empty.")

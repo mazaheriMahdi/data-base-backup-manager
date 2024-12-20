@@ -9,7 +9,8 @@ import (
 type ScheduledTask struct {
 	Id        uuid.UUID
 	Name      string
-	Action    worker.Task
+	Action    *worker.Task
 	NextRun   time.Time
 	RunOffset time.Duration
+	timer     *time.Timer
 }

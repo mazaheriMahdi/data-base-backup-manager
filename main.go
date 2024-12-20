@@ -1,57 +1,36 @@
 package main
 
 import (
-	"backupManager/backup"
 	"backupManager/configs"
-	"backupManager/dump"
+	"backupManager/handlers"
 	object_storage "backupManager/object-storage"
 	"backupManager/scheduler"
 	"backupManager/worker"
-	"github.com/google/uuid"
-	"strconv"
-	"time"
+	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func main() {
-
 	session := object_storage.GenerateS3Session(configs.AppConfig.S3Region,
 		configs.AppConfig.S3AccessKeyID,
 		configs.AppConfig.S3SecretAccessKey,
 		configs.AppConfig.S3Endpoint)
 
-	dbBackUpFunc := func() error {
-		port, _ := strconv.Atoi(configs.AppConfig.BackUpDbPort)
-		err := backup.Run(dump.DBConfiguration{
-			Host:     configs.AppConfig.BackUpDbHost,
-			Port:     port,
-			DB:       configs.AppConfig.BackUpDbName,
-			Username: configs.AppConfig.BackUpDbUser,
-			Password: configs.AppConfig.BackUpDbPassword,
-		}, session, configs.AppConfig.S3Bucket)
-		if err != nil {
-			return err
-		}
-		return nil
-	}
-
 	workerInstance := worker.NewWorker()
-	workerInstance.Start()
 
 	schedulerInstance := scheduler.NewScheduler()
 	schedulerInstance.AddWorker(workerInstance)
-	schedulerInstance.AddTask(&scheduler.ScheduledTask{
-		Action: worker.Task{
-			Id:     uuid.New(),
-			Action: dbBackUpFunc,
-		},
-		NextRun:   time.Now(),
-		RunOffset: 12 * time.Hour,
-		Id:        uuid.New(),
-		Name:      "Backup cms_production",
-	})
+	workerInstance.Start()
 	schedulerInstance.Run()
 
-	for {
-		time.Sleep(1 * time.Second)
-	}
+	r := gin.Default()
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"status": "ok",
+		})
+	})
+	r.POST("/Tasks", func(c *gin.Context) {
+		handlers.AddTaskHandler(c, schedulerInstance, session)
+	})
+	r.Run("0.0.0.0:8080") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
