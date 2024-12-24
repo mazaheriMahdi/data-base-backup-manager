@@ -4,15 +4,15 @@ import (
 	"github.com/google/uuid"
 	"log"
 	"sync"
-	"time"
 )
 
 type Worker struct {
-	queue     []Task
-	isRunning bool
-	Id        uuid.UUID
-	popLock   sync.Mutex
-	pushLock  sync.Mutex
+	queue           []Task
+	isRunning       bool
+	Id              uuid.UUID
+	popLock         sync.Mutex
+	pushLock        sync.Mutex
+	starterTaskChan chan bool
 }
 
 func NewWorker() *Worker {
@@ -31,9 +31,8 @@ func (w *Worker) Start() {
 		log.Printf("Wroker With Id %v started Successfully\n", w.Id)
 		for w.isRunning {
 			if len(w.queue) == 0 {
-				log.Println("Worker queue is empty.")
-				time.Sleep(10 * time.Second)
-				continue
+				log.Printf("Worker With Id %v is in idle mode\n", w.Id)
+				<-w.starterTaskChan
 			}
 			task := w.queue[0]
 			log.Printf("Executing task with id (%v)\n", task.Id)
@@ -56,4 +55,7 @@ func (w *Worker) AddTask(task Task) {
 	w.pushLock.Lock()
 	w.queue = append(w.queue, task)
 	w.pushLock.Unlock()
+	go func() {
+		w.starterTaskChan <- true
+	}()
 }

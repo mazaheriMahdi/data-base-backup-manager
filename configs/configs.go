@@ -34,10 +34,4 @@ func init() {
 	AppConfig.S3Region = os.Getenv("S3_REGION")
 	AppConfig.S3Bucket = os.Getenv("S3_BUCKET")
 	AppConfig.S3Endpoint = os.Getenv("S3_ENDPOINT")
-
-	AppConfig.BackUpDbUser = os.Getenv("BACKUP_DB_USER")
-	AppConfig.BackUpDbPassword = os.Getenv("BACKUP_DB_PASSWORD")
-	AppConfig.BackUpDbHost = os.Getenv("BACKUP_DB_HOST")
-	AppConfig.BackUpDbPort = os.Getenv("BACKUP_DB_PORT")
-	AppConfig.BackUpDbName = os.Getenv("BACKUP_DB_NAME")
 }
