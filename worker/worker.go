@@ -17,11 +17,12 @@ type Worker struct {
 
 func NewWorker() *Worker {
 	return &Worker{
-		queue:     make([]Task, 0),
-		isRunning: false,
-		Id:        uuid.New(),
-		popLock:   sync.Mutex{},
-		pushLock:  sync.Mutex{},
+		queue:           make([]Task, 0),
+		isRunning:       false,
+		Id:              uuid.New(),
+		popLock:         sync.Mutex{},
+		pushLock:        sync.Mutex{},
+		starterTaskChan: make(chan bool),
 	}
 }
 
@@ -33,6 +34,7 @@ func (w *Worker) Start() {
 			if len(w.queue) == 0 {
 				log.Printf("Worker With Id %v is in idle mode\n", w.Id)
 				<-w.starterTaskChan
+				log.Printf("worker exit from idle mode")
 			}
 			task := w.queue[0]
 			log.Printf("Executing task with id (%v)\n", task.Id)

@@ -1,0 +1,13 @@
+POST /Tasks HTTP/1.1
+Host: backup-manager.dormsoftware.ir
+Content-Type: application/json
+
+{
+  "Name": "back up task name",
+  "offset": 14000,
+  "host": "db host",
+  "port": 5432,
+  "username": "db user name",
+  "password": "****",
+  "db": "db name"
+}

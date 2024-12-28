@@ -3,10 +3,12 @@ package dump
 import (
 	"fmt"
 	pg "github.com/habx/pg-commands"
+	"log"
 	"os"
 )
 
 func GetDump(dbConfig DBConfiguration) (*os.File, error) {
+	log.Println("Running pg dump")
 	dump, _ := pg.NewDump(&pg.Postgres{
 		Host:     dbConfig.Host,
 		Port:     dbConfig.Port,
@@ -16,6 +18,7 @@ func GetDump(dbConfig DBConfiguration) (*os.File, error) {
 	})
 	dumpExec := dump.Exec(pg.ExecOptions{StreamPrint: false})
 	if dumpExec.Error != nil {
+		log.Println("Dump Error:", dumpExec.Error)
 		return nil, dumpExec.Error.Err
 	} else {
 		fmt.Println("Dump success")

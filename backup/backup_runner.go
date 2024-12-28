@@ -14,6 +14,7 @@ import (
 func Run(configuration dump.DBConfiguration, s3Session *s3.S3, bucket string) error {
 	dumpFile, err := dump.GetDump(configuration)
 	if err != nil {
+
 		return err
 	}
 	var buf bytes.Buffer
@@ -21,7 +22,7 @@ func Run(configuration dump.DBConfiguration, s3Session *s3.S3, bucket string) er
 		fmt.Fprintln(os.Stderr, "Error reading file:", err)
 		return err
 	}
-	log.Println("Upload Started....")
+	log.Printf("Uploading backup (%s) to S3 bucket: %s", dumpFile.Name(), bucket)
 	_, err = s3Session.PutObject(&s3.PutObjectInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(fmt.Sprintf("%s-%s", configuration.DB, dumpFile.Name())),
@@ -30,7 +31,7 @@ func Run(configuration dump.DBConfiguration, s3Session *s3.S3, bucket string) er
 	if err != nil {
 		return err
 	}
-	log.Println("Upload Finished....")
+	log.Printf("Successfully uploaded %s to S3 bucket: %s", dumpFile.Name(), bucket)
 	err = os.Remove(dumpFile.Name())
 	if err != nil {
 		return err
