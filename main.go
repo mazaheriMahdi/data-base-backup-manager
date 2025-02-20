@@ -7,6 +7,7 @@ import (
 	"backupManager/scheduler"
 	"backupManager/telegram_bot"
 	"backupManager/worker"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
@@ -54,11 +55,15 @@ func RegisterTelegramEventDispatcher() {
 		if update.Message == nil {
 			continue
 		}
-		telegram_bot.AddChatId(update.Message.Chat.ID)
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Done")
-		_, err := bot.Send(msg)
-		if err != nil {
-			log.Println(err)
+		if update.Message.IsCommand() {
+			if update.Message.Command() == "register" {
+				telegram_bot.AddChatId(update.Message.Chat.ID)
+				msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Backup Bucket With Id %s registered 😊", update.Message.Chat.ID))
+				_, err := bot.Send(msg)
+				if err != nil {
+					log.Println(err)
+				}
+			}
 		}
 	}
 
