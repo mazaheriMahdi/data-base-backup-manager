@@ -1,13 +1,17 @@
 POST /Tasks HTTP/1.1
 Host: backup-manager.dormsoftware.ir
 Content-Type: application/json
+Content-Length: 232
 
 {
-  "Name": "back up task name",
+  "Name" : "backup cms_production",
   "offset": 14000,
-  "host": "db host",
-  "port": 5432,
-  "username": "db user name",
-  "password": "****",
-  "db": "db name"
+  "host" : "postgres-production-svc",
+  "port" : 5432,
+  "username" : "arvan",
+  "password" : "1234567890090987654321234567",
+  "db" : "cms_production"
 }
+
+
+x

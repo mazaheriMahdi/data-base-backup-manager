@@ -1,6 +1,11 @@
 package configs
 
-import "os"
+import (
+	"fmt"
+	"log"
+	"os"
+	"strconv"
+)
 
 type Config struct {
 	S3AccessKeyID     string
@@ -13,6 +18,9 @@ type Config struct {
 	BackUpDbHost      string
 	BackUpDbPort      string
 	BackUpDbName      string
+	UploadToS3        bool
+	UploadToTelegram  bool
+	TelegramBotToken  string
 }
 
 var AppConfig = Config{
@@ -26,6 +34,9 @@ var AppConfig = Config{
 	BackUpDbHost:      "",
 	BackUpDbPort:      "",
 	BackUpDbName:      "",
+	UploadToS3:        false,
+	UploadToTelegram:  false,
+	TelegramBotToken:  "",
 }
 
 func init() {
@@ -34,4 +45,14 @@ func init() {
 	AppConfig.S3Region = os.Getenv("S3_REGION")
 	AppConfig.S3Bucket = os.Getenv("S3_BUCKET")
 	AppConfig.S3Endpoint = os.Getenv("S3_ENDPOINT")
+	var err error
+	AppConfig.UploadToS3, err = strconv.ParseBool(os.Getenv("UPLOAD_TO_S3"))
+	if err != nil {
+		log.Fatalln(fmt.Errorf("faild to parse UPLOAD_TO_S3: %v", err))
+	}
+	AppConfig.UploadToTelegram, err = strconv.ParseBool(os.Getenv("UPLOAD_TO_TELEGRAM"))
+	if err != nil {
+		log.Fatalln(fmt.Errorf("faild to parse UPLOAD_TO_TELEGRAM: %v", err))
+	}
+	AppConfig.TelegramBotToken = os.Getenv("TELEGRAM_BOT_TOKEN")
 }
