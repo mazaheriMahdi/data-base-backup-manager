@@ -15,7 +15,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o dgres .
 
 # Stage 2: Final stage
-FROM docker.arvancloud.ir/postgres:15-alpine
+FROM postgres:15-alpine
 
 # Set the working directory
 WORKDIR /app
