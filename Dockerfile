@@ -1,5 +1,5 @@
 # Stage 1: Build stage
-FROM docker.arvancloud.ir/golang:1.23-alpine AS build
+FROM golang:1.23-alpine AS build
 
 # Set the working directory
 WORKDIR /app
